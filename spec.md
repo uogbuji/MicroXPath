@@ -28,7 +28,7 @@ The MicroXPath union operator | behaves much as in XPath 1, and is also a way to
 
 ## Grammar
 
-(main changes from XPath 1.0: rules 6, 15, 16, 39, as well as references to QName)
+(Main changes from XPath 1.0: rules 6, 12-14, 19, 37, and references to QName *passim*)
 
 	[1]		LocationPath					::= RelativeLocationPath | AbsoluteLocationPath	
 	[2]		AbsoluteLocationPath			::= '/' RelativeLocationPath? | AbbreviatedAbsoluteLocationPath	
@@ -37,66 +37,66 @@ The MicroXPath union operator | behaves much as in XPath 1, and is also a way to
 	[5]		AxisSpecifier					::=	AxisName '::' | AbbreviatedAxisSpecifier
 	[6]		AxisName						::=	"ancestor" | "ancestor-or-self" | "attribute" | "child" | "descendant" | "descendant-or-self" | "following" | "following-sibling" | "parent" | "preceding" | "preceding-sibling" | "self"
 	[7]		NodeTest						::=	NameTest | NodeType '(' ')'
-	[8]		Predicate						::=	'[' PredicateExpr ']'
-	[9]		PredicateExpr					::=	Expr
-	[10]	AbbreviatedAbsoluteLocationPath	::=	'//' RelativeLocationPath	
-	[11]	AbbreviatedRelativeLocationPath	::=	RelativeLocationPath '//' Step	
-	[12]	AbbreviatedStep					::=	'.' | '..'
-	[13]	AbbreviatedAxisSpecifier		::=	'@'?
-	[14]	Expr							::=	OrExpr
-	[15]	PrimaryExpr						::=	ExprSingle ("," ExprSingle)*
-	[16]	ExprSingle						::=	VariableReference | '(' Expr ')' | Literal | Number | FunctionCall
+	[8]   AbbreviatedAbsoluteLocationPath	::=	'//' RelativeLocationPath	
+	[9]   AbbreviatedRelativeLocationPath	::=	RelativeLocationPath '//' Step	
+	[10]	AbbreviatedStep					::=	'.' | '..'
+	[11]	AbbreviatedAxisSpecifier		::=	'@'?
+
+	[12]	Expr						::=	LocationPath | VariableReference | '(' Expr ')' | Literal | Number | FunctionCall | OrExpr | UnionExpr | SequenceExpr
+	[13]	SequenceExpr						::= Expr | '('	Expr ("," Expr)* ')' | '(' ')'
+	[14]	PredicatedExpression			::=	Expr PredicateList
+	[15]	PredicateList						::=	(Predicate)*
+	[16]	Predicate						::=	'[' Expr ']'
 	[17]	FunctionCall					::=	FunctionName '(' ( Argument ( ',' Argument )* )? ')'	
 	[18]	Argument						::=	Expr
-	[19]	UnionExpr						::=	PathExpr | UnionExpr '|' PathExpr
-	[20]	PathExpr						::=	LocationPath | FilterExpr | FilterExpr '/' RelativeLocationPath | FilterExpr '//' RelativeLocationPath
-	[21]	FilterExpr						::=	PrimaryExpr | FilterExpr Predicate
-	[22]	OrExpr							::=	AndExpr | OrExpr 'or' AndExpr
-	[23]	AndExpr							::=	EqualityExpr | AndExpr 'and' EqualityExpr
-	[24]	EqualityExpr					::=	RelationalExpr | EqualityExpr '=' RelationalExpr | EqualityExpr '!=' RelationalExpr
-	[25]	RelationalExpr					::=	AdditiveExpr | RelationalExpr '<' AdditiveExpr | RelationalExpr '>' AdditiveExpr | RelationalExpr '<=' AdditiveExpr | RelationalExpr '>=' AdditiveExpr
-	[26]	AdditiveExpr					::=	MultiplicativeExpr | AdditiveExpr '+' MultiplicativeExpr | AdditiveExpr '-' MultiplicativeExpr
-	[27]	MultiplicativeExpr				::=	UnaryExpr | MultiplicativeExpr MultiplyOperator UnaryExpr | MultiplicativeExpr 'div' UnaryExpr | MultiplicativeExpr 'mod' UnaryExpr
-	[28]	UnaryExpr						::=	UnionExpr | '-' UnaryExpr
-	[29]	ExprToken						::=	'(' | ')' | '[' | ']' | '.' | '..' | '@' | ',' | '::' | NameTest | NodeType | Operator | FunctionName | AxisName | Literal | Number | VariableReference
-	[30]	Literal							::=	'"' [^"]* '"' | "'" [^']* "'"
-	[31]	Number							::=	Digits ('.' Digits?)? | '.' Digits
-	[32]	Digits							::=	[0-9]+
-	[33]	Operator						::=	OperatorName | MultiplyOperator | '/' | '//' | '|' | '+' | '-' | '=' | '!=' | '<' | '<=' | '>' | '>='
-	[34]	OperatorName					::=	'and' | 'or' | 'mod' | 'div'
-	[35]	MultiplyOperator				::=	'*'
-	[36]	FunctionName					::=	Name - NodeType
-	[37]	VariableReference				::=	'$' Name
-	[38]	NameTest						::=	'*' | Name
-	[39]	NodeType						::=	'node' | 'text'
-	[40]	ExprWhitespace					::=	S
+	[19]	UnionExpr						::=	Expr '|' Expr
+	[20]	OrExpr							::=	AndExpr | OrExpr 'or' AndExpr
+
+	[21]	AndExpr							::=	EqualityExpr | AndExpr 'and' EqualityExpr
+	[22]	EqualityExpr					::=	RelationalExpr | EqualityExpr '=' RelationalExpr | EqualityExpr '!=' RelationalExpr
+	[23]	RelationalExpr					::=	AdditiveExpr | RelationalExpr '<' AdditiveExpr | RelationalExpr '>' AdditiveExpr | RelationalExpr '<=' AdditiveExpr | RelationalExpr '>=' AdditiveExpr
+	[24]	AdditiveExpr					::=	MultiplicativeExpr | AdditiveExpr '+' MultiplicativeExpr | AdditiveExpr '-' MultiplicativeExpr
+	[25]	MultiplicativeExpr				::=	UnaryExpr | MultiplicativeExpr MultiplyOperator UnaryExpr | MultiplicativeExpr 'div' UnaryExpr | MultiplicativeExpr 'mod' UnaryExpr
+	[26]	UnaryExpr						::=	Expr | '-' UnaryExpr
+	[27]	ExprToken						::=	'(' | ')' | '[' | ']' | '.' | '..' | '@' | ',' | '::' | NameTest | NodeType | Operator | FunctionName | AxisName | Literal | Number | VariableReference
+	[28]	Literal							::=	'"' [^"]* '"' | "'" [^']* "'"
+	[29]	Number							::=	Digits ('.' Digits?)? | '.' Digits
+	[30]	Digits							::=	[0-9]+
+	[31]	Operator						::=	OperatorName | MultiplyOperator | '/' | '//' | '|' | '+' | '-' | '=' | '!=' | '<' | '<=' | '>' | '>='
+	[32]	OperatorName					::=	'and' | 'or' | 'mod' | 'div'
+	[33]	MultiplyOperator				::=	'*'
+	[34]	FunctionName					::=	Name - NodeType
+	[35]	VariableReference				::=	'$' Name
+	[36]	NameTest						::=	'*' | Name
+	[37]	NodeType						::=	'node' | 'text'
+	[38]	ExprWhitespace					::=	S
 
 ## Functions
 
 XPath 1.0 functions minus:
 
-* local-name
-* namespace-uri
-* id
+* `local-name`
+* `namespace-uri`
+* `id` [`key()` can be used to provide this sort of functionality]
 
 plus:
 
-* key [from XSLT; host environment is expected to proide key lookup tables in the execution context]
-* map [similar to the ! operator in XPath 3]
-* range [similar to range expressions in XPath 1]
-* union [from EXSLT]
-* intersection [from EXSLT]
-* matches [from XPath 2]
-* replace [from XPath 2]
-* tokenize [from XPath 2]
-* object-type [from EXSLT]
-* evaluate [from EXSLT]
-* same-lang [towards the idea of lang() but lang specifiers would not be in xml:lang in MicroXML]
+* `key` [from XSLT; host environment is expected to proide key lookup tables in the execution context]
+* `map` [similar to the ! operator in XPath 3]
+* `range` [similar to range expressions in XPath 1]
+* `union` [from EXSLT]
+* `intersection` [from EXSLT]
+* `matches` [from XPath 2]
+* `replace` [from XPath 2]
+* `tokenize` [from XPath 2]
+* `object-type` [from EXSLT]
+* `evaluate` [from EXSLT]
+* `same-lang` [towards the idea of lang() but lang specifiers would not be in `xml:lang` in MicroXML]
 
 some key behavior modifications:
 
-* count -- Takes a sequence & returns the number of items in the sequence (remember that MicroXPath sequences are implicitly flat)
-* string -- always operates on first item in a given sequence, regardless of document order
+* `count` -- Takes a sequence & returns the number of items in the sequence (remember that MicroXPath sequences are implicitly flat)
+* `string` -- always operates on first item in a given sequence, regardless of document order
 
 ## Error handling
 

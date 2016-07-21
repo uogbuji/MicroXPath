@@ -1,5 +1,39 @@
 #MicroXPath examples
 
+Expressions preceded by ⚠️ are examples from non-MicroXPath languages and are **not** valid MicroXPath.
+
+Example input document.
+
+```
+<TEI>
+  <teiHeader>
+    <title>Chanson Balisage</title>
+  </teiHeader>
+  <text>
+    <lg type="poem">
+    <l><ref target="#a1" type="noteAnchor">Bar ‘Ebroyo</ref> cursed CSS, he cursed</l>
+    <l>And cursed XForms, he smote his XML</l>
+    </lg>
+    <note id="a1" type="footnote"><bibl>
+      <author>Nathan P. Gibson</author>, <author>Winona Salesky</author> &amp; <author>David A. Michelson</author>, <title>Encoding Western and Non-Western Names for Ancient Syriac Authors</title>, Balisage, 2015</bibl>
+    </note>
+  </text>
+</TEI>
+```
+
+First author's name, with prepended label
+
+```
+concat("First author:", string(TEI/text/note//author[1]))
+```
+
+Each author's name, with prepended label
+
+```
+map(TEI/text/note//author, 'concat("First author:", .)')
+```
+
+
 ## XPath 2 equivalents (from spec)
 
 ### From [3.3 Sequence Expressions](https://www.w3.org/TR/xpath20/#id-sequence-expressions)
